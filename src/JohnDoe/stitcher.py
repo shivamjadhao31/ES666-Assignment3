@@ -6,7 +6,7 @@ import numpy as np
 import random
 
 class PanaromaStitcher():
-    def _init_(self):
+    def __init__(self):
         # SIFT for feature detection and matching
         self.sift = cv2.SIFT_create()
         # FLANN parameters for fast feature matching
