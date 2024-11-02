@@ -6,40 +6,19 @@ import numpy as np
 import random
 
 class PanaromaStitcher:
-    def __init__(self, max_size=800):
+    def __init__(self):
         self.feature_detector = cv2.SIFT_create()
         tree_config = dict(algorithm=1, trees=5)
         matcher_config = dict(checks=50)
         self.matcher = cv2.FlannBasedMatcher(tree_config, matcher_config)
-        self.max_size = max_size
-
-    def resize_image(self, img):
-        height, width = img.shape[:2]
-        if height > width:
-            if height > self.max_size:
-                ratio = self.max_size / height
-                width = int(width * ratio)
-                height = self.max_size
-        else:
-            if width > self.max_size:
-                ratio = self.max_size / width
-                height = int(height * ratio)
-                width = self.max_size
-        return cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
 
     def process_image_pair(self, src, dst):
-        src = self.resize_image(src)
-        dst = self.resize_image(dst)
-        
         src_mono = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
         dst_mono = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
         
         src_keys, src_desc = self.feature_detector.detectAndCompute(src_mono, None)
         dst_keys, dst_desc = self.feature_detector.detectAndCompute(dst_mono, None)
         
-        if src_desc is None or dst_desc is None:
-            return None, None, []
-            
         raw_matches = self.matcher.knnMatch(src_desc, dst_desc, k=2)
         
         filtered_matches = []
@@ -48,27 +27,6 @@ class PanaromaStitcher:
                 filtered_matches.append(primary)
                 
         return src_keys, dst_keys, filtered_matches
-    # def __init__(self):
-    #     self.feature_detector = cv2.SIFT_create()
-    #     tree_config = dict(algorithm=1, trees=5)
-    #     matcher_config = dict(checks=50)
-    #     self.matcher = cv2.FlannBasedMatcher(tree_config, matcher_config)
-
-    # def process_image_pair(self, src, dst):
-    #     src_mono = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
-    #     dst_mono = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
-        
-    #     src_keys, src_desc = self.feature_detector.detectAndCompute(src_mono, None)
-    #     dst_keys, dst_desc = self.feature_detector.detectAndCompute(dst_mono, None)
-        
-    #     raw_matches = self.matcher.knnMatch(src_desc, dst_desc, k=2)
-        
-    #     filtered_matches = []
-    #     for primary, secondary in raw_matches:
-    #         if primary.distance < 0.7 * secondary.distance:
-    #             filtered_matches.append(primary)
-                
-    #     return src_keys, dst_keys, filtered_matches
 
     def calculate_transform_matrix(self, coords):
         transform_eqns = []
