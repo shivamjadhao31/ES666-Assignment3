@@ -99,7 +99,7 @@ class PanaromaStitcher:
                   
         return result
 
-    def make_panorama_for_images_in(self, input_path):
+    def make_panaroma_for_images_in(self, input_path):
         image_files = sorted(glob.glob(input_path + os.sep + '*'))
         if len(image_files) < 2:
             raise ValueError("Insufficient images for panorama creation")
