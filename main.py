@@ -27,7 +27,7 @@ for idx,algo in enumerate(all_submissions):
         ###
         for impaths in glob.glob(path):
             print('\t\t Processing... {}'.format(impaths))
-            stitched_image, homography_matrix_list = inst.make_panaroma_for_images_in(path=impaths)
+            stitched_image, homography_matrix_list = inst.make_panaroma_for_images_in(impaths)
 
             outfile =  './results/{}/{}.png'.format(impaths.split(os.sep)[-1],spec.name)
             os.makedirs(os.path.dirname(outfile),exist_ok=True)
